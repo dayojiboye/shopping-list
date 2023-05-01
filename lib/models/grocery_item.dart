@@ -11,5 +11,5 @@ class GroceryItem {
   final String id;
   final String name;
   final int quantity;
-  final Category? category;
+  final Category category;
 }

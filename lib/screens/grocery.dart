@@ -12,36 +12,24 @@ class GroceryScreen extends StatelessWidget {
         title: const Text("Your Groceries"),
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         itemCount: groceryItems.length,
-        itemBuilder: (context, index) => Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  height: 30,
-                  width: 30,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    color: groceryItems[index].category?.color,
-                  ),
-                ),
-                const SizedBox(width: 30),
-                Text(
-                  groceryItems[index].name,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                const Spacer(),
-                Text(
-                  groceryItems[index].quantity.toString(),
-                  style: const TextStyle(fontSize: 16),
-                )
-              ],
+        itemBuilder: (context, index) => ListTile(
+          leading: Container(
+            height: 24,
+            width: 24,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3),
+              color: groceryItems[index].category.color,
             ),
-            const SizedBox(
-              height: 40,
-            )
-          ],
+          ),
+          title: Text(
+            groceryItems[index].name,
+            style: const TextStyle(fontSize: 20),
+          ),
+          trailing: Text(
+            groceryItems[index].quantity.toString(),
+            style: const TextStyle(fontSize: 18),
+          ),
         ),
       ),
     );
