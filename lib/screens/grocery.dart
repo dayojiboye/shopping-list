@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/screens/new_item.dart';
+import 'package:shopping_list/widgets/grocery_list.dart';
 
-// TO-DO: add text for empty grocery items list
-// TO-DO: add dismissible to delete an  item
 class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
 
@@ -30,6 +29,12 @@ class _GroceryScreenState extends State<GroceryScreen> {
     });
   }
 
+  void _removeItem(GroceryItem item) {
+    setState(() {
+      _groceryItems.remove(item);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,26 +58,11 @@ class _GroceryScreenState extends State<GroceryScreen> {
                 textAlign: TextAlign.center,
               ),
             )
-          : ListView.builder(
-              itemCount: _groceryItems.length,
-              itemBuilder: (context, index) => ListTile(
-                leading: Container(
-                  height: 24,
-                  width: 24,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    color: _groceryItems[index].category.color,
-                  ),
-                ),
-                title: Text(
-                  _groceryItems[index].name,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                trailing: Text(
-                  _groceryItems[index].quantity.toString(),
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
+          : GroceryList(
+              groceryItems: _groceryItems,
+              onRemoveItem: (GroceryItem item) {
+                _removeItem(item);
+              },
             ),
     );
   }
