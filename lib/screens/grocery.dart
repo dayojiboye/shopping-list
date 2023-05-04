@@ -42,27 +42,38 @@ class _GroceryScreenState extends State<GroceryScreen> {
           )
         ],
       ),
-      body: ListView.builder(
-        itemCount: _groceryItems.length,
-        itemBuilder: (context, index) => ListTile(
-          leading: Container(
-            height: 24,
-            width: 24,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              color: _groceryItems[index].category.color,
+      body: _groceryItems.isEmpty
+          ? const Center(
+              child: Text(
+                "No grocery item added! \n Please add one now.",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            )
+          : ListView.builder(
+              itemCount: _groceryItems.length,
+              itemBuilder: (context, index) => ListTile(
+                leading: Container(
+                  height: 24,
+                  width: 24,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                    color: _groceryItems[index].category.color,
+                  ),
+                ),
+                title: Text(
+                  _groceryItems[index].name,
+                  style: const TextStyle(fontSize: 20),
+                ),
+                trailing: Text(
+                  _groceryItems[index].quantity.toString(),
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
             ),
-          ),
-          title: Text(
-            _groceryItems[index].name,
-            style: const TextStyle(fontSize: 20),
-          ),
-          trailing: Text(
-            _groceryItems[index].quantity.toString(),
-            style: const TextStyle(fontSize: 18),
-          ),
-        ),
-      ),
     );
   }
 }
