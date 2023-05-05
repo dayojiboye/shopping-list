@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shopping_list/constants/api.dart';
+import 'package:shopping_list/constants/enums.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import "package:http/http.dart" as http;
+import 'package:shopping_list/utils/custom_snackbar.dart';
 
 class NewItemScreen extends StatefulWidget {
   const NewItemScreen({super.key});
@@ -28,34 +31,47 @@ class _NewItemScreenState extends State<NewItemScreen> {
       setState(() {
         _isSending = true;
       });
-      final url = Uri.https("flutter-prep-8e00d-default-rtdb.firebaseio.com",
-          "shopping-list.json");
-      final response = await http.post(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: json.encode(
-          {
-            "name": _enteredName,
-            "quantity": _enteredQuantity,
-            "category": _selectedCategory.title,
+
+      try {
+        final response = await http.post(
+          const API(endpoint: "shopping-list.json").url,
+          headers: {
+            "Content-Type": "application/json",
           },
-        ),
-      );
+          body: json.encode(
+            {
+              "name": _enteredName,
+              "quantity": _enteredQuantity,
+              "category": _selectedCategory.title,
+            },
+          ),
+        );
 
-      final Map<String, dynamic> resData = json.decode(response.body);
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> resData = json.decode(response.body);
 
-      if (!context.mounted) return;
+          if (!context.mounted) return;
 
-      Navigator.of(context).pop(
-        GroceryItem(
-          id: resData["name"],
-          name: _enteredName,
-          quantity: _enteredQuantity,
-          category: _selectedCategory,
-        ),
-      );
+          Navigator.of(context).pop(
+            GroceryItem(
+              id: resData["name"],
+              name: _enteredName,
+              quantity: _enteredQuantity,
+              category: _selectedCategory,
+            ),
+          );
+        }
+      } catch (err) {
+        setState(() {
+          _isSending = false;
+        });
+
+        CustomSnackbar(
+          context: context,
+          variant: SnackbarVariant.ERROR,
+          text: "An error occured! Please try again.",
+        ).showFeedback();
+      }
     }
   }
 
@@ -73,6 +89,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
             children: [
               TextFormField(
                 maxLength: 50,
+                textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
                   label: Text("Name"),
                 ),

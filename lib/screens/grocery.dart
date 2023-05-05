@@ -2,15 +2,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shopping_list/constants/api.dart';
+import 'package:shopping_list/constants/enums.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/screens/new_item.dart';
+import 'package:shopping_list/utils/custom_snackbar.dart';
 import 'package:shopping_list/widgets/empty_text.dart';
 import 'package:shopping_list/widgets/grocery_list.dart';
 import "package:http/http.dart" as http;
-
-enum CurrentState { IDLE, LOADING, ERROR, SUCCESS }
 
 class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
@@ -22,7 +23,7 @@ class GroceryScreen extends StatefulWidget {
 class _GroceryScreenState extends State<GroceryScreen> {
   List<GroceryItem> _groceryItems = [];
   String? _error;
-  CurrentState currentState = CurrentState.IDLE;
+  ViewState currentState = ViewState.IDLE;
 
   @override
   void initState() {
@@ -32,45 +33,52 @@ class _GroceryScreenState extends State<GroceryScreen> {
 
   void _loadItems() async {
     setState(() {
-      currentState = CurrentState.LOADING;
+      currentState = ViewState.LOADING;
     });
 
-    final url = Uri.https(
-        "flutter-prep-8e00d-default-rtdb.firebaseio.com", "shopping-list.json");
-    final response = await http.get(url);
+    try {
+      final response =
+          await http.get(const API(endpoint: "shopping-list.json").url);
 
-    if (response.statusCode >= 400) {
+      if (response.statusCode == 200) {
+        setState(() {
+          currentState = ViewState.SUCCESS;
+        });
+
+        if (response.body == "null") {
+          return;
+        }
+
+        final Map<String, dynamic> listData = jsonDecode(response.body);
+
+        final List<GroceryItem> loadedItems = [];
+
+        for (final item in listData.entries) {
+          final Category category = categories.entries
+              .firstWhere(
+                  (catItem) => catItem.value.title == item.value["category"])
+              .value;
+
+          loadedItems.add(
+            GroceryItem(
+              id: item.key,
+              name: item.value["name"],
+              quantity: item.value["quantity"],
+              category: category,
+            ),
+          );
+        }
+
+        setState(() {
+          _groceryItems = loadedItems;
+        });
+      }
+    } catch (err) {
       setState(() {
-        _error = "Failed to fetch data. Please try again later.";
-        currentState = CurrentState.ERROR;
+        _error = "Something went wrong! \n Please try again later.";
+        currentState = ViewState.ERROR;
       });
     }
-
-    final Map<String, dynamic> listData = jsonDecode(response.body);
-
-    final List<GroceryItem> loadedItems = [];
-
-    for (final item in listData.entries) {
-      final Category category = categories.entries
-          .firstWhere(
-              (catItem) => catItem.value.title == item.value["category"])
-          .value;
-
-      loadedItems.add(
-        GroceryItem(
-          id: item.key,
-          name: item.value["name"],
-          quantity: item.value["quantity"],
-          category: category,
-        ),
-      );
-    }
-
-    setState(() {
-      _groceryItems = loadedItems;
-      // _isLoading = false;
-      currentState = CurrentState.SUCCESS;
-    });
   }
 
   void _addItem() async {
@@ -87,21 +95,50 @@ class _GroceryScreenState extends State<GroceryScreen> {
     });
   }
 
-  void _removeItem(GroceryItem item) {
+  void _removeItem(BuildContext context, GroceryItem item) async {
+    final index = _groceryItems.indexOf(item);
+
     setState(() {
       _groceryItems.remove(item);
     });
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    try {
+      final response =
+          await http.delete(API(endpoint: "shopping-list/${item.id}.json").url);
+
+      if (response.statusCode == 200) {
+        if (!context.mounted) return;
+
+        CustomSnackbar(
+          context: context,
+          variant: SnackbarVariant.SUCCESS,
+          text: "Item was deleted successfully.",
+        ).showFeedback();
+      }
+    } catch (err) {
+      setState(() {
+        _groceryItems.insert(index, item);
+      });
+
+      CustomSnackbar(
+        context: context,
+        variant: SnackbarVariant.ERROR,
+        text: "An error occured! Please try again.",
+      ).showFeedback();
+    }
   }
 
   Widget? renderContent() {
     switch (currentState) {
-      case CurrentState.LOADING:
+      case ViewState.LOADING:
         return const Center(child: CircularProgressIndicator());
 
-      case CurrentState.ERROR:
+      case ViewState.ERROR:
         return EmptyText(text: _error!);
 
-      case CurrentState.SUCCESS:
+      case ViewState.SUCCESS:
         if (_groceryItems.isEmpty) {
           return const EmptyText(
               text: "No grocery item added! \n Please add one now.");
@@ -110,7 +147,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
         return GroceryList(
           groceryItems: _groceryItems,
           onRemoveItem: (GroceryItem item) {
-            _removeItem(item);
+            _removeItem(context, item);
           },
         );
 

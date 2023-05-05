@@ -13,7 +13,9 @@ class EmptyText extends StatelessWidget {
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
+          height: 1.6,
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }
