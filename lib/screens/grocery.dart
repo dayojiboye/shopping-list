@@ -17,6 +17,7 @@ class GroceryScreen extends StatefulWidget {
 
 class _GroceryScreenState extends State<GroceryScreen> {
   List<GroceryItem> _groceryItems = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
     final response = await http.get(url);
     final Map<String, dynamic> listData = jsonDecode(response.body);
 
-    final List<GroceryItem> _loadedItems = [];
+    final List<GroceryItem> loadedItems = [];
 
     for (final item in listData.entries) {
       final Category category = categories.entries
@@ -39,7 +40,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
               (catItem) => catItem.value.title == item.value["category"])
           .value;
 
-      _loadedItems.add(
+      loadedItems.add(
         GroceryItem(
           id: item.key,
           name: item.value["name"],
@@ -50,18 +51,23 @@ class _GroceryScreenState extends State<GroceryScreen> {
     }
 
     setState(() {
-      _groceryItems = _loadedItems;
+      _groceryItems = loadedItems;
+      _isLoading = false;
     });
   }
 
   void _addItem() async {
-    await Navigator.of(context).push<GroceryItem>(
+    final newItem = await Navigator.of(context).push<GroceryItem>(
       MaterialPageRoute(
         builder: (ctx) => const NewItemScreen(),
       ),
     );
 
-    _loadItems();
+    if (newItem == null) return;
+
+    setState(() {
+      _groceryItems.add(newItem);
+    });
   }
 
   void _removeItem(GroceryItem item) {
@@ -82,23 +88,25 @@ class _GroceryScreenState extends State<GroceryScreen> {
           )
         ],
       ),
-      body: _groceryItems.isEmpty
-          ? const Center(
-              child: Text(
-                "No grocery item added! \n Please add one now.",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _groceryItems.isEmpty
+              ? const Center(
+                  child: Text(
+                    "No grocery item added! \n Please add one now.",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : GroceryList(
+                  groceryItems: _groceryItems,
+                  onRemoveItem: (GroceryItem item) {
+                    _removeItem(item);
+                  },
                 ),
-                textAlign: TextAlign.center,
-              ),
-            )
-          : GroceryList(
-              groceryItems: _groceryItems,
-              onRemoveItem: (GroceryItem item) {
-                _removeItem(item);
-              },
-            ),
     );
   }
 }
