@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,8 +6,11 @@ import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/screens/new_item.dart';
+import 'package:shopping_list/widgets/empty_text.dart';
 import 'package:shopping_list/widgets/grocery_list.dart';
 import "package:http/http.dart" as http;
+
+enum CurrentState { IDLE, LOADING, ERROR, SUCCESS }
 
 class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
@@ -17,7 +21,8 @@ class GroceryScreen extends StatefulWidget {
 
 class _GroceryScreenState extends State<GroceryScreen> {
   List<GroceryItem> _groceryItems = [];
-  bool _isLoading = true;
+  String? _error;
+  CurrentState currentState = CurrentState.IDLE;
 
   @override
   void initState() {
@@ -26,10 +31,21 @@ class _GroceryScreenState extends State<GroceryScreen> {
   }
 
   void _loadItems() async {
+    setState(() {
+      currentState = CurrentState.LOADING;
+    });
+
     final url = Uri.https(
         "flutter-prep-8e00d-default-rtdb.firebaseio.com", "shopping-list.json");
-
     final response = await http.get(url);
+
+    if (response.statusCode >= 400) {
+      setState(() {
+        _error = "Failed to fetch data. Please try again later.";
+        currentState = CurrentState.ERROR;
+      });
+    }
+
     final Map<String, dynamic> listData = jsonDecode(response.body);
 
     final List<GroceryItem> loadedItems = [];
@@ -52,7 +68,8 @@ class _GroceryScreenState extends State<GroceryScreen> {
 
     setState(() {
       _groceryItems = loadedItems;
-      _isLoading = false;
+      // _isLoading = false;
+      currentState = CurrentState.SUCCESS;
     });
   }
 
@@ -76,6 +93,32 @@ class _GroceryScreenState extends State<GroceryScreen> {
     });
   }
 
+  Widget? renderContent() {
+    switch (currentState) {
+      case CurrentState.LOADING:
+        return const Center(child: CircularProgressIndicator());
+
+      case CurrentState.ERROR:
+        return EmptyText(text: _error!);
+
+      case CurrentState.SUCCESS:
+        if (_groceryItems.isEmpty) {
+          return const EmptyText(
+              text: "No grocery item added! \n Please add one now.");
+        }
+
+        return GroceryList(
+          groceryItems: _groceryItems,
+          onRemoveItem: (GroceryItem item) {
+            _removeItem(item);
+          },
+        );
+
+      default:
+        return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,25 +131,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
           )
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _groceryItems.isEmpty
-              ? const Center(
-                  child: Text(
-                    "No grocery item added! \n Please add one now.",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              : GroceryList(
-                  groceryItems: _groceryItems,
-                  onRemoveItem: (GroceryItem item) {
-                    _removeItem(item);
-                  },
-                ),
+      body: renderContent(),
     );
   }
 }
