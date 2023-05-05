@@ -9,9 +9,11 @@ import 'package:shopping_list/models/category.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/screens/new_item.dart';
 import 'package:shopping_list/utils/custom_snackbar.dart';
+import 'package:shopping_list/widgets/app_progress_indicator.dart';
 import 'package:shopping_list/widgets/empty_text.dart';
 import 'package:shopping_list/widgets/grocery_list.dart';
 import "package:http/http.dart" as http;
+import 'package:shopping_list/widgets/touchable_opacity.dart';
 
 class GroceryScreen extends StatefulWidget {
   const GroceryScreen({super.key});
@@ -133,7 +135,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
   Widget? renderContent() {
     switch (currentState) {
       case ViewState.LOADING:
-        return const Center(child: CircularProgressIndicator());
+        return const Center(child: AppProgressIndicator(radius: 20));
 
       case ViewState.ERROR:
         return EmptyText(text: _error!);
@@ -162,9 +164,13 @@ class _GroceryScreenState extends State<GroceryScreen> {
       appBar: AppBar(
         title: const Text("Your Groceries"),
         actions: [
-          IconButton(
-            onPressed: _addItem,
-            icon: const Icon(Icons.add),
+          TouchableOpacity(
+            onTap: _addItem,
+            width: 50,
+            child: const Icon(
+              Icons.add,
+              size: 25,
+            ),
           )
         ],
       ),

@@ -8,6 +8,8 @@ import 'package:shopping_list/models/category.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import "package:http/http.dart" as http;
 import 'package:shopping_list/utils/custom_snackbar.dart';
+import 'package:shopping_list/widgets/app_progress_indicator.dart';
+import 'package:shopping_list/widgets/touchable_opacity.dart';
 
 class NewItemScreen extends StatefulWidget {
   const NewItemScreen({super.key});
@@ -80,6 +82,12 @@ class _NewItemScreenState extends State<NewItemScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add a new item"),
+        leading: TouchableOpacity(
+          child: const Icon(Icons.arrow_back_ios),
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12),
@@ -167,21 +175,30 @@ class _NewItemScreenState extends State<NewItemScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
-                    onPressed: _isSending
-                        ? null
-                        : () {
-                            _formKey.currentState!.reset();
-                          },
+                  TouchableOpacity(
+                    onTap: () {
+                      _formKey.currentState!.reset();
+                    },
+                    disabled: _isSending,
                     child: const Text("Reset"),
                   ),
-                  ElevatedButton(
-                    onPressed: _isSending ? null : _saveItem,
+                  const SizedBox(width: 16),
+                  TouchableOpacity(
+                    onTap: _saveItem,
+                    disabled: _isSending,
+                    height: 50,
+                    width: 120,
+                    decoration: const BoxDecoration(
+                      color: Color(0xff265B68),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(7),
+                      ),
+                    ),
                     child: _isSending
                         ? const SizedBox(
                             height: 16,
                             width: 16,
-                            child: CircularProgressIndicator(),
+                            child: AppProgressIndicator(),
                           )
                         : const Text("Add Item"),
                   )
