@@ -167,6 +167,8 @@ class _GroceryScreenState extends State<GroceryScreen> {
           TouchableOpacity(
             onTap: _addItem,
             width: 50,
+            height: null,
+            decoration: const BoxDecoration(),
             child: const Icon(
               Icons.add,
               size: 25,

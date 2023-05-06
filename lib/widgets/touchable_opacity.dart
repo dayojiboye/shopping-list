@@ -7,8 +7,8 @@ class TouchableOpacity extends StatefulWidget {
     this.onTap,
     this.onLongPress,
     this.decoration,
-    this.width,
-    this.height,
+    this.width = 150,
+    this.height = 50,
     this.padding,
     Key? key,
     this.behavior = HitTestBehavior.opaque,
@@ -16,6 +16,7 @@ class TouchableOpacity extends StatefulWidget {
     this.onTapDown,
     this.onTapUp,
     this.onTapCancel,
+    this.backgroundColor = const Color(0xff265B68),
   }) : super(key: key);
 
   final Widget child;
@@ -31,6 +32,7 @@ class TouchableOpacity extends StatefulWidget {
   final VoidCallback? onTapDown;
   final VoidCallback? onTapUp;
   final VoidCallback? onTapCancel;
+  final Color backgroundColor;
 
   @override
   State<TouchableOpacity> createState() => _TouchableOpacityState();
@@ -83,7 +85,13 @@ class _TouchableOpacityState extends State<TouchableOpacity> {
           child: Container(
             width: widget.width,
             height: widget.height,
-            decoration: widget.decoration,
+            decoration: widget.decoration ??
+                BoxDecoration(
+                  color: widget.backgroundColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(50),
+                  ),
+                ),
             padding: widget.padding,
             child: widget.isCentered
                 ? Center(
