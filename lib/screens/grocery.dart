@@ -176,7 +176,10 @@ class _GroceryScreenState extends State<GroceryScreen> {
           )
         ],
       ),
-      body: renderContent(),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 0, bottom: 20),
+        child: renderContent(),
+      ),
     );
   }
 }

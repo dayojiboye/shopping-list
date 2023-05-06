@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/models/grocery_item.dart';
+import 'package:shopping_list/widgets/category_color_tag.dart';
 
 class GroceryList extends StatelessWidget {
   const GroceryList(
@@ -19,14 +20,7 @@ class GroceryList extends StatelessWidget {
         },
         background: Container(color: Colors.red),
         child: ListTile(
-          leading: Container(
-            height: 24,
-            width: 24,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              color: groceryItems[index].category.color,
-            ),
-          ),
+          leading: CategoryColorTag(color: groceryItems[index].category.color),
           title: Text(
             groceryItems[index].name,
             style: const TextStyle(fontSize: 20),

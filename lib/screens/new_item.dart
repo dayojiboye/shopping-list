@@ -10,6 +10,8 @@ import "package:http/http.dart" as http;
 import 'package:shopping_list/utils/custom_snackbar.dart';
 import 'package:shopping_list/widgets/app_progress_indicator.dart';
 import 'package:shopping_list/widgets/app_text_button.dart';
+import 'package:shopping_list/widgets/app_text_form_field.dart';
+import 'package:shopping_list/widgets/categories_button.dart';
 import 'package:shopping_list/widgets/touchable_opacity.dart';
 
 class NewItemScreen extends StatefulWidget {
@@ -92,17 +94,14 @@ class _NewItemScreenState extends State<NewItemScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
-                maxLength: 50,
+              AppTextFormField(
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  label: Text("Name"),
-                ),
+                hintText: "Enter a name",
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
@@ -115,17 +114,17 @@ class _NewItemScreenState extends State<NewItemScreen> {
                 onSaved: (value) {
                   _enteredName = value!;
                 },
-              ), // instead of TextField()
+              ),
+              const SizedBox(height: 16), // instead of TextField()
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        label: Text("Quantity"),
-                      ),
-                      keyboardType: TextInputType.number,
+                    child: AppTextFormField(
+                      hintText: "Enter a quantity",
+                      maxLength: null,
                       initialValue: _enteredQuantity.toString(),
+                      keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
@@ -141,45 +140,27 @@ class _NewItemScreenState extends State<NewItemScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: DropdownButtonFormField(
-                      value: _selectedCategory,
-                      items: [
-                        ...categories.entries.map(
-                          (category) => DropdownMenuItem(
-                            value: category.value,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 16,
-                                  height: 16,
-                                  color: category.value.color,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(category.value.title),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedCategory = value!;
-                        });
-                      },
-                    ),
-                  ),
+                  CategoriesButton(
+                    selectedCategory: _selectedCategory,
+                    categories: categories,
+                    onSelect: (value) {
+                      setState(() {
+                        _selectedCategory = value!;
+                      });
+                    },
+                  )
                 ],
               ),
-              const SizedBox(
-                height: 12,
-              ),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   AppTextButton(
                     onTap: () {
                       _formKey.currentState!.reset();
+                      setState(() {
+                        _selectedCategory = categories[Categories.vegetables]!;
+                      });
                     },
                     disabled: _isSending,
                     text: "Reset",
