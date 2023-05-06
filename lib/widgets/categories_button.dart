@@ -23,6 +23,7 @@ class CategoriesButton extends StatefulWidget {
 
 class _CategoriesButtonState extends State<CategoriesButton> {
   void _openCategoriesBottomsheet() {
+    FocusManager.instance.primaryFocus?.unfocus();
     CustomBottomsheet(
       context: context,
       child: Expanded(
@@ -37,7 +38,7 @@ class _CategoriesButtonState extends State<CategoriesButton> {
                     },
                     width: double.infinity,
                     height: null,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 5),
                     decoration: const BoxDecoration(),
                     child: ListTile(
                       leading: CategoryColorTag(color: category.value.color),

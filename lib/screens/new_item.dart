@@ -82,104 +82,111 @@ class _NewItemScreenState extends State<NewItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Add a new item"),
-        leading: TouchableOpacity(
-          decoration: const BoxDecoration(),
-          child: const Icon(Icons.arrow_back_ios),
-          onTap: () {
-            Navigator.of(context).pop();
-          },
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Add a new item"),
+          leading: TouchableOpacity(
+            decoration: const BoxDecoration(),
+            child: const Icon(Icons.arrow_back_ios),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              AppTextFormField(
-                textCapitalization: TextCapitalization.words,
-                hintText: "Enter a name",
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length <= 1 ||
-                      value.trim().length > 50) {
-                    return "Must be between 1 and 50 characters.";
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _enteredName = value!;
-                },
-              ),
-              const SizedBox(height: 16), // instead of TextField()
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: AppTextFormField(
-                      hintText: "Enter a quantity",
-                      maxLength: null,
-                      initialValue: _enteredQuantity.toString(),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            int.tryParse(value) == null ||
-                            int.tryParse(value)! <= 0) {
-                          return "Must be a valid, positive number.";
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _enteredQuantity = int.parse(value!);
-                      },
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Column(
+              children: [
+                AppTextFormField(
+                  textCapitalization: TextCapitalization.words,
+                  hintText: "Enter a name",
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length <= 1 ||
+                        value.trim().length > 50) {
+                      return "Must be between 1 and 50 characters.";
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _enteredName = value!;
+                  },
+                ),
+                const SizedBox(height: 16), // instead of TextField()
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: AppTextFormField(
+                        hintText: "Enter a quantity",
+                        maxLength: null,
+                        initialValue: _enteredQuantity.toString(),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              int.tryParse(value) == null ||
+                              int.tryParse(value)! <= 0) {
+                            return "Must be a valid, positive number.";
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _enteredQuantity = int.parse(value!);
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  CategoriesButton(
-                    selectedCategory: _selectedCategory,
-                    categories: categories,
-                    onSelect: (value) {
-                      setState(() {
-                        _selectedCategory = value!;
-                      });
-                    },
-                  )
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  AppTextButton(
-                    onTap: () {
-                      _formKey.currentState!.reset();
-                      setState(() {
-                        _selectedCategory = categories[Categories.vegetables]!;
-                      });
-                    },
-                    disabled: _isSending,
-                    text: "Reset",
-                  ),
-                  const SizedBox(width: 16),
-                  TouchableOpacity(
-                    onTap: _saveItem,
-                    disabled: _isSending,
-                    child: _isSending
-                        ? const SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: AppProgressIndicator(),
-                          )
-                        : const Text("Add Item"),
-                  )
-                ],
-              ),
-            ],
+                    const SizedBox(width: 8),
+                    CategoriesButton(
+                      selectedCategory: _selectedCategory,
+                      categories: categories,
+                      onSelect: (value) {
+                        setState(() {
+                          _selectedCategory = value!;
+                        });
+                      },
+                    )
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    AppTextButton(
+                      onTap: () {
+                        _formKey.currentState!.reset();
+                        setState(() {
+                          _selectedCategory =
+                              categories[Categories.vegetables]!;
+                        });
+                      },
+                      disabled: _isSending,
+                      text: "Reset",
+                    ),
+                    const SizedBox(width: 16),
+                    TouchableOpacity(
+                      onTap: _saveItem,
+                      disabled: _isSending,
+                      loading: _isSending,
+                      child: const Text(
+                        "Add Item",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

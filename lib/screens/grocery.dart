@@ -151,6 +151,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
           onRemoveItem: (GroceryItem item) {
             _removeItem(context, item);
           },
+          onRefresh: _loadItems,
         );
 
       default:

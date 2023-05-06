@@ -16,15 +16,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Groceries',
-      theme: ThemeData.dark().copyWith(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light().copyWith(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 147, 229, 250),
-          brightness: Brightness.dark,
-          surface: const Color.fromARGB(255, 42, 51, 59),
+          seedColor: const Color(0xffFFDDB3),
+          surface: const Color(0xfffffbf5),
         ),
-        scaffoldBackgroundColor: const Color.fromARGB(255, 50, 58, 60),
-        appBarTheme: const AppBarTheme(centerTitle: false),
+        textTheme: Theme.of(context).textTheme.apply(
+              bodyColor: Colors.black,
+              displayColor: Colors.black,
+            ),
+        scaffoldBackgroundColor: const Color(0xfffffbf5),
+        appBarTheme: const AppBarTheme(
+          centerTitle: false,
+          surfaceTintColor: Colors.transparent,
+        ),
         splashFactory: NoSplash.splashFactory,
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,

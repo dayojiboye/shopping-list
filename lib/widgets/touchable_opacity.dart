@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_list/widgets/app_progress_indicator.dart';
 
 class TouchableOpacity extends StatefulWidget {
   const TouchableOpacity({
@@ -13,10 +14,11 @@ class TouchableOpacity extends StatefulWidget {
     Key? key,
     this.behavior = HitTestBehavior.opaque,
     this.disabled = false,
+    this.loading = false,
     this.onTapDown,
     this.onTapUp,
     this.onTapCancel,
-    this.backgroundColor = const Color(0xff265B68),
+    this.backgroundColor = Colors.black,
   }) : super(key: key);
 
   final Widget child;
@@ -33,6 +35,7 @@ class TouchableOpacity extends StatefulWidget {
   final VoidCallback? onTapUp;
   final VoidCallback? onTapCancel;
   final Color backgroundColor;
+  final bool loading;
 
   @override
   State<TouchableOpacity> createState() => _TouchableOpacityState();
@@ -47,7 +50,7 @@ class _TouchableOpacityState extends State<TouchableOpacity> {
       child: GestureDetector(
         behavior: widget.behavior,
         onTapDown: (tapDownDetails) {
-          if (widget.disabled) {
+          if (widget.disabled || widget.loading) {
             return;
           }
 
@@ -77,8 +80,9 @@ class _TouchableOpacityState extends State<TouchableOpacity> {
             widget.onTapCancel!();
           }
         },
-        onTap: widget.disabled ? null : widget.onTap,
-        onLongPress: widget.disabled ? null : widget.onLongPress,
+        onTap: widget.disabled || widget.loading ? null : widget.onTap,
+        onLongPress:
+            widget.disabled || widget.loading ? null : widget.onLongPress,
         child: AnimatedOpacity(
           opacity: isTappedDown ? 0.6 : 1.0,
           duration: const Duration(milliseconds: 250),
@@ -93,11 +97,22 @@ class _TouchableOpacityState extends State<TouchableOpacity> {
                   ),
                 ),
             padding: widget.padding,
-            child: widget.isCentered
-                ? Center(
-                    child: widget.child,
+            child: widget.loading
+                ? const Center(
+                    child: SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: AppProgressIndicator(
+                        color: Colors.white,
+                        backgroundColor: Colors.black,
+                      ),
+                    ),
                   )
-                : widget.child,
+                : widget.isCentered
+                    ? Center(
+                        child: widget.child,
+                      )
+                    : widget.child,
           ),
         ),
       ),

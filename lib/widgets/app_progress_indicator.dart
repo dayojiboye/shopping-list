@@ -8,14 +8,14 @@ class AppProgressIndicator extends StatelessWidget {
     super.key,
     this.radius = 10,
     this.animating = true,
-    this.color = Colors.white,
-    this.backgroundColor,
+    this.color = Colors.black,
+    this.backgroundColor = Colors.white,
   });
 
   final double radius;
   final bool animating;
   final Color color;
-  final Color? backgroundColor;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {

@@ -40,7 +40,12 @@ class AppTextButton extends StatelessWidget {
       decoration: const BoxDecoration(),
       child: Text(
         text,
-        style: textStyle,
+        style: textStyle ??
+            const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
       ),
     );
   }

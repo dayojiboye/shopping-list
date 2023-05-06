@@ -34,6 +34,8 @@ class AppTextFormField extends StatelessWidget {
   final String? label;
   final String? initialValue;
 
+  final double radius = 15;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -43,13 +45,13 @@ class AppTextFormField extends StatelessWidget {
       textInputAction: textInputAction,
       maxLength: maxLength,
       textCapitalization: textCapitalization,
-      style: const TextStyle(fontSize: 14),
+      style: const TextStyle(fontSize: 16),
       initialValue: initialValue,
       decoration: decoration ??
           InputDecoration(
             label: label != null ? Text(label!) : null,
             hintText: hintText,
-            hintStyle: const TextStyle(fontSize: 14),
+            hintStyle: const TextStyle(fontSize: 16),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             prefix: const Padding(padding: EdgeInsets.only(left: 12)),
@@ -58,10 +60,30 @@ class AppTextFormField extends StatelessWidget {
               top: 20,
               right: 12,
             ),
-            border: const OutlineInputBorder(
+            border: OutlineInputBorder(
               borderRadius: BorderRadius.all(
-                Radius.circular(7),
+                Radius.circular(radius),
               ),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Color(0xffcccccc),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(radius),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Color.fromARGB(255, 197, 46, 35),
+                width: 2.0,
+              ),
+              borderRadius: BorderRadius.circular(radius),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.black, width: 2.0),
+              borderRadius: BorderRadius.circular(radius),
             ),
           ),
       validator: validator,
