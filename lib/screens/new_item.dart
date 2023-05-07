@@ -8,7 +8,6 @@ import 'package:shopping_list/models/category.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import "package:http/http.dart" as http;
 import 'package:shopping_list/utils/custom_snackbar.dart';
-import 'package:shopping_list/widgets/app_progress_indicator.dart';
 import 'package:shopping_list/widgets/app_text_button.dart';
 import 'package:shopping_list/widgets/app_text_form_field.dart';
 import 'package:shopping_list/widgets/categories_button.dart';

@@ -15,7 +15,8 @@ class CustomBottomsheet {
       builder: (ctx) => SizedBox(
         width: double.infinity,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          // padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
           child: Column(
             children: [
               // bottom sheet top handle

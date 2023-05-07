@@ -4,7 +4,7 @@ import 'package:shopping_list/widgets/app_progress_indicator.dart';
 class TouchableOpacity extends StatefulWidget {
   const TouchableOpacity({
     required this.child,
-    this.isCentered = true,
+    this.alignment = Alignment.center,
     this.onTap,
     this.onLongPress,
     this.decoration,
@@ -22,7 +22,7 @@ class TouchableOpacity extends StatefulWidget {
   }) : super(key: key);
 
   final Widget child;
-  final bool isCentered;
+  final AlignmentGeometry alignment;
   final double? width;
   final double? height;
   final EdgeInsetsGeometry? padding;
@@ -87,6 +87,7 @@ class _TouchableOpacityState extends State<TouchableOpacity> {
           opacity: isTappedDown ? 0.6 : 1.0,
           duration: const Duration(milliseconds: 250),
           child: Container(
+            alignment: widget.alignment,
             width: widget.width,
             height: widget.height,
             decoration: widget.decoration ??
@@ -98,21 +99,15 @@ class _TouchableOpacityState extends State<TouchableOpacity> {
                 ),
             padding: widget.padding,
             child: widget.loading
-                ? const Center(
-                    child: SizedBox(
-                      height: 16,
-                      width: 16,
-                      child: AppProgressIndicator(
-                        color: Colors.white,
-                        backgroundColor: Colors.black,
-                      ),
+                ? const SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: AppProgressIndicator(
+                      color: Colors.white,
+                      backgroundColor: Colors.black,
                     ),
                   )
-                : widget.isCentered
-                    ? Center(
-                        child: widget.child,
-                      )
-                    : widget.child,
+                : widget.child,
           ),
         ),
       ),
